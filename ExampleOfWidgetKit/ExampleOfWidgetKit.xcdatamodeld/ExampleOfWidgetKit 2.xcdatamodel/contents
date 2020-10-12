@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17192" systemVersion="19G2021" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="Todo" representedClassName="Todo" syncable="YES" codeGenerationType="class">
-        <attribute name="due" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="due" attributeType="Date" defaultDateTimeInterval="624199740" usesScalarValueType="NO"/>
+        <attribute name="status" attributeType="Integer 64" minValueString="0" maxValueString="2" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="task" attributeType="String" defaultValueString=""/>
     </entity>
     <elements>
-        <element name="Todo" positionX="-63" positionY="-18" width="128" height="73"/>
+        <element name="Todo" positionX="-63" positionY="-18" width="128" height="88"/>
     </elements>
 </model>

@@ -6,42 +6,58 @@
 //
 
 import SwiftUI
+import CoreData
+import Combine
 
 struct AddTodoView: View {
-    @Environment(\.managedObjectContext) private var viewContext
+    @ObservedObject var viewModel: AddTodoViewModel
+    
+    init(viewContext: NSManagedObjectContext, presenting: Binding<Bool>) {
+        viewModel = AddTodoViewModel(context: viewContext, presenting: presenting)
+    }
+    
+    var cancellables: Set<AnyCancellable> = [ ]
     
     var body: some View {
-        VStack {
-            
-        }.toolbar {
-            Button(action: addItem) {
-                #if os(iOS)
-                EditButton()
-                #endif
-                Label("Add Item", systemImage: "plus")
+        NavigationView {
+            VStack {
+                VStack(alignment: .leading, spacing: 16) {
+                    Text("Task Description").font(.title3).foregroundColor(.secondary)
+                    TextEditor(text: $viewModel.task).border(Color.secondary, width: 1)
+                }
+                DatePicker("Select when to finish this task.", selection: .init(get: {
+                    viewModel.due
+                }, set: {
+                    viewModel.due = $0
+                }))
+                .datePickerStyle(GraphicalDatePickerStyle())
+            }
+            .padding()
+            .navigationTitle("Add Todo")
+            .toolbar {
+                Button(action: viewModel.save) {
+                    Text("Save")
+                }
+            }
+            .alert(
+                isPresented: Binding<Bool>.init(
+                    get: {
+                        viewModel.errorMessage != nil
+                    },
+                    set: { _ in
+                        viewModel.errorMessage = nil
+                    })
+            ) { 
+                Alert(title: Text("Please input all columns"), message: nil, dismissButton: nil)
             }
         }
     }
     
-    private func addItem() {
-        withAnimation {
-            let newItem = Todo(context: viewContext)
-            newItem.due = Date()
-
-            do {
-                try viewContext.save()
-            } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-            }
-        }
-    }
+    
 }
 
 struct AddTodoView_Previews: PreviewProvider {
     static var previews: some View {
-        AddTodoView()
+        AddTodoView(viewContext: PersistenceController.preview.container.viewContext, presenting: Binding<Bool>.init(get: { true }, set: { _ in }))
     }
 }

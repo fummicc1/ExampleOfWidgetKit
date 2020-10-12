@@ -20,14 +20,30 @@ struct ContentView: View {
     
     var body: some View {
         NavigationView {
-            List {
-                ForEach(todos) { (todo: Todo) in
-                    VStack {
-                        Text(todo.task!).font(.title)
-                        Text("Todo at \(todo.due!, formatter: todoDateFormatter)")
+            ZStack(alignment: .bottomTrailing) {
+                List {
+                    ForEach(todos) { (todo: Todo) in
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text(todo.task!).font(.title3)
+                            Text("Todo at \(todo.due!, formatter: todoDateFormatter)")
+                        }
                     }
+                    .onDelete(perform: deleteTodos)
                 }
-                .onDelete(perform: deleteTodos)
+                Button(action: showAddTodoView) {
+                    Image(systemName: "plus")
+                        .font(.title)
+                        .padding()
+                }
+                .background(Color(UIColor.secondarySystemBackground))
+                .clipShape(Circle())
+                .shadow(color: .gray, radius: 2, x: 2, y: 2)
+                .alignmentGuide(.bottom, computeValue: { dimension in
+                    dimension[.bottom] + 40
+                })
+                .alignmentGuide(.trailing, computeValue: { dimension in
+                    dimension[.trailing] + 24
+                })
             }
             .navigationTitle("Todo List")
             .toolbar {
@@ -35,16 +51,25 @@ struct ContentView: View {
                     #if os(iOS)
                     EditButton()
                     #endif
-
-                    Button(action: showAddTodoView) {
-                        Label("Add Todo", systemImage: "plus")
-                    }
+                }
+                ToolbarItemGroup(placement: .confirmationAction) {
+                    Button(action: deleteAll, label: {
+                        HStack(spacing: 4) {
+                            Text("Delete All")
+                            Image(systemName: "trash")
+                        }
+                    })
                 }
             }
             .sheet(isPresented: $isShowingAddTodoView) {
-                AddTodoView().environment(\.managedObjectContext, viewContext)
+                AddTodoView(viewContext: viewContext, presenting: $isShowingAddTodoView)
             }            
         }
+    }
+    
+    private func deleteAll() {
+        todos.forEach(viewContext.delete)
+        try? viewContext.save()
     }
     
     private func showAddTodoView() {
@@ -66,13 +91,6 @@ struct ContentView: View {
         }
     }
 }
-
-private let todoDateFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.dateStyle = .short
-    formatter.timeStyle = .medium
-    return formatter
-}()
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
