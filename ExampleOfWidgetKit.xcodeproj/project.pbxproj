@@ -15,6 +15,8 @@
 		D31D60FE25346FE0006C0C6D /* ExampleOfWidgetKit.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = D31D60FC25346FE0006C0C6D /* ExampleOfWidgetKit.xcdatamodeld */; };
 		D31D610925346FE0006C0C6D /* ExampleOfWidgetKitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D31D610825346FE0006C0C6D /* ExampleOfWidgetKitTests.swift */; };
 		D31D611425346FE0006C0C6D /* ExampleOfWidgetKitUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D31D611325346FE0006C0C6D /* ExampleOfWidgetKitUITests.swift */; };
+		D3B7E2C925347254007A8E45 /* AddTodoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3B7E2C825347254007A8E45 /* AddTodoView.swift */; };
+		D3B7E2D12534740E007A8E45 /* AddTodoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D3B7E2D02534740E007A8E45 /* AddTodoViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,6 +51,8 @@
 		D31D610F25346FE0006C0C6D /* ExampleOfWidgetKitUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ExampleOfWidgetKitUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D31D611325346FE0006C0C6D /* ExampleOfWidgetKitUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleOfWidgetKitUITests.swift; sourceTree = "<group>"; };
 		D31D611525346FE0006C0C6D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		D3B7E2C825347254007A8E45 /* AddTodoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTodoView.swift; sourceTree = "<group>"; };
+		D3B7E2D02534740E007A8E45 /* AddTodoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTodoViewModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,11 +103,13 @@
 		D31D60F025346FDF006C0C6D /* ExampleOfWidgetKit */ = {
 			isa = PBXGroup;
 			children = (
-				D31D60F125346FDF006C0C6D /* ExampleOfWidgetKitApp.swift */,
-				D31D60F325346FDF006C0C6D /* ContentView.swift */,
-				D31D60F525346FE0006C0C6D /* Assets.xcassets */,
-				D31D60FA25346FE0006C0C6D /* Persistence.swift */,
 				D31D60FF25346FE0006C0C6D /* Info.plist */,
+				D3B7E2C825347254007A8E45 /* AddTodoView.swift */,
+				D3B7E2D02534740E007A8E45 /* AddTodoViewModel.swift */,
+				D31D60F325346FDF006C0C6D /* ContentView.swift */,
+				D31D60F125346FDF006C0C6D /* ExampleOfWidgetKitApp.swift */,
+				D31D60FA25346FE0006C0C6D /* Persistence.swift */,
+				D31D60F525346FE0006C0C6D /* Assets.xcassets */,
 				D31D60FC25346FE0006C0C6D /* ExampleOfWidgetKit.xcdatamodeld */,
 				D31D60F725346FE0006C0C6D /* Preview Content */,
 			);
@@ -269,6 +275,8 @@
 				D31D60FB25346FE0006C0C6D /* Persistence.swift in Sources */,
 				D31D60F425346FDF006C0C6D /* ContentView.swift in Sources */,
 				D31D60F225346FDF006C0C6D /* ExampleOfWidgetKitApp.swift in Sources */,
+				D3B7E2D12534740E007A8E45 /* AddTodoViewModel.swift in Sources */,
+				D3B7E2C925347254007A8E45 /* AddTodoView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
