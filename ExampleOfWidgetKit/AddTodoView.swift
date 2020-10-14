@@ -20,35 +20,41 @@ struct AddTodoView: View {
     
     var body: some View {
         NavigationView {
-            VStack {
-                VStack(alignment: .leading, spacing: 16) {
-                    Text("Task Description").font(.title3).foregroundColor(.secondary)
-                    TextEditor(text: $viewModel.task).border(Color.secondary, width: 1)
+            GeometryReader { _ in
+                VStack {
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text("Task Description").font(.title3).foregroundColor(.secondary)
+                        TextEditor(text: $viewModel.task).border(Color.secondary, width: 1)
+                    }
+                    DatePicker("Select when to finish this task.", selection: .init(get: {
+                        viewModel.due
+                    }, set: {
+                        viewModel.due = $0
+                    }))
+                    .datePickerStyle(GraphicalDatePickerStyle())
                 }
-                DatePicker("Select when to finish this task.", selection: .init(get: {
-                    viewModel.due
-                }, set: {
-                    viewModel.due = $0
-                }))
-                .datePickerStyle(GraphicalDatePickerStyle())
-            }
-            .padding()
-            .navigationTitle("Add Todo")
-            .toolbar {
-                Button(action: viewModel.save) {
-                    Text("Save")
+                .padding()
+                .navigationTitle("Add Todo")
+                .toolbar {
+                    Button(action: viewModel.save) {
+                        Text("Save")
+                    }
+                }
+                .alert(
+                    isPresented: Binding<Bool>.init(
+                        get: {
+                            viewModel.errorMessage != nil
+                        },
+                        set: { _ in
+                            viewModel.errorMessage = nil
+                        })
+                ) {
+                    Alert(title: Text("Please input all columns"), message: nil, dismissButton: nil)
                 }
             }
-            .alert(
-                isPresented: Binding<Bool>.init(
-                    get: {
-                        viewModel.errorMessage != nil
-                    },
-                    set: { _ in
-                        viewModel.errorMessage = nil
-                    })
-            ) { 
-                Alert(title: Text("Please input all columns"), message: nil, dismissButton: nil)
+            .ignoresSafeArea(.keyboard, edges: .bottom)
+            .onTapGesture {
+                UIApplication.shared.endEditing()
             }
         }
     }

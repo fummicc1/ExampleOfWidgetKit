@@ -15,50 +15,79 @@ struct Provider: IntentTimelineProvider {
     func previewTodo() -> Todo {
         let todo = Todo(context: viewContext)
         todo.due = Date().addingTimeInterval(60 * 60 * 6)
-        todo.task = "finish homework"
+        todo.task = "No Todo"
         return todo
     }
     
     func placeholder(in context: Context) -> SimpleEntry {
-        SimpleEntry(date: Date(), todo: previewTodo(), configuration: ConfigurationIntent())
+        let configuration = TodoIntent()
+        configuration.kind = .descending
+        return SimpleEntry(date: Date(), todo: previewTodo(), intent: configuration)
     }
-
-    func getSnapshot(for configuration: ConfigurationIntent, in context: Context, completion: @escaping (SimpleEntry) -> ()) {
-        let entry = SimpleEntry(date: Date(), todo: previewTodo(), configuration: configuration)
+    
+    func getSnapshot(for configuration: TodoIntent, in context: Context, completion: @escaping (SimpleEntry) -> ()) {
+        let entry = SimpleEntry(date: Date(), todo: previewTodo(), intent: configuration)
         completion(entry)
     }
-
-    func getTimeline(for configuration: ConfigurationIntent, in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
+    
+    func getTimeline(for configuration: TodoIntent, in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
         var entries: [SimpleEntry] = []
         let currentDate = Date()
-
-        guard let todos = try? viewContext.fetch(.init(entityName: "Todo")) as? [Todo] else {
-            let timeline = Timeline(entries: entries, policy: .never)
-            completion(timeline)
+        let intentKind = configuration.kind
+        
+        let todoOptional: Todo?
+        
+        switch intentKind {
+        case .ascending:
+            todoOptional = getTodo(ascending: true)
+            
+        case .descending:
+            todoOptional = getTodo(ascending: false)
+            
+        default:
+            todoOptional = nil
+        }
+        
+        guard let todo = todoOptional else {
+            let todo = previewTodo()
+            entries.append(SimpleEntry(date: currentDate, todo: todo, intent: configuration))
             return
         }
-        if todos.isEmpty {
-            let todo = previewTodo()
-            entries.append(SimpleEntry(date: currentDate, todo: todo, configuration: configuration))
-        }
-        entries = todos.map {
-            SimpleEntry(date: currentDate, todo: $0, configuration: configuration)
-        }
-
+        let entry = SimpleEntry(date: todo.due!, todo: todo, intent: configuration)
+        entries.append(entry)
+        
         let timeline = Timeline(entries: entries, policy: .atEnd)
         completion(timeline)
+    }
+    
+    private func getTodo(ascending: Bool) -> Todo? {
+        guard var todos = try? viewContext.fetch(.init(entityName: "Todo")) as? [Todo] else {
+            return nil
+        }
+        todos.sort(by: {
+            if let first = $0.due,
+               let second = $1.due,
+               first > Date() {
+                return first < second
+            }
+            return false
+        })
+        if ascending {
+            return todos.first
+        }
+        return todos.last
     }
 }
 
 struct SimpleEntry: TimelineEntry {
     let date: Date
     let todo: Todo
-    let configuration: ConfigurationIntent
+    let intent: TodoIntent
 }
 
 struct WidgetAppEntryView : View {
     var entry: Provider.Entry
-
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             if let due = entry.todo.due, let task = entry.todo.task {
@@ -72,20 +101,20 @@ struct WidgetAppEntryView : View {
 @main
 struct WidgetApp: Widget {
     let kind: String = "WidgetApp"
-
+    
     var body: some WidgetConfiguration {
-        IntentConfiguration(kind: kind, intent: ConfigurationIntent.self, provider: Provider()) { entry in
+        IntentConfiguration(kind: kind, intent: TodoIntent.self, provider: Provider()) { entry in
             WidgetAppEntryView(entry: entry)
         }
-        .configurationDisplayName("My Widget")
-        .description("This is an example widget.")
+        .configurationDisplayName("Todo Glance")
+        .description("You can switch Todo Order, ascending or deascending.")
         .supportedFamilies([.systemMedium])
     }
 }
 
 struct WidgetApp_Previews: PreviewProvider {
     static var previews: some View {
-        WidgetAppEntryView(entry: SimpleEntry(date: Date(), todo: Todo(), configuration: ConfigurationIntent()))
+        WidgetAppEntryView(entry: SimpleEntry(date: Date(), todo: Todo(), intent: TodoIntent()))
             .previewContext(WidgetPreviewContext(family: .systemSmall))
     }
 }
